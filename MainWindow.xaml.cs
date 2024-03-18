@@ -81,18 +81,21 @@ namespace Calculator
         }
         private void numPlus_Click(object sender, RoutedEventArgs e)
         {
-
+            operationClass.pressOperator(sender);
         }
         private void numMinus_Click(object sender, RoutedEventArgs e)
         {
+            operationClass.pressOperator(sender);
 
         }
         private void numMultiply_Click(object sender, RoutedEventArgs e)
         {
+            operationClass.pressOperator(sender);
 
         }
         private void numDivide_Click(object sender, RoutedEventArgs e)
         {
+            operationClass.pressOperator(sender);
 
         }
         private void numEqual_Click(object sender, RoutedEventArgs e)
@@ -101,7 +104,7 @@ namespace Calculator
         }
         private void numClear_Click(object sender, RoutedEventArgs e)
         {
-            operationClass.clearText();
+            operationClass.clearText(sender);
         }
 
     }
