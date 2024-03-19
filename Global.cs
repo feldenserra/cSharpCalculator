@@ -17,5 +17,6 @@ namespace Calculator
         public const string Subtraction = "Subtraction";
         public const string Division = "Division";
         public const string Multiplication = "Multiplication";
+        public const string None = "None";
     }
 }

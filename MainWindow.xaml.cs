@@ -100,7 +100,7 @@ namespace Calculator
         }
         private void numEqual_Click(object sender, RoutedEventArgs e)
         {
-
+            operationClass.calcOperation();
         }
         private void numClear_Click(object sender, RoutedEventArgs e)
         {
