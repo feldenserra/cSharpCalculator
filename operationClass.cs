@@ -18,7 +18,9 @@ namespace Calculator
         private static Button? _lastClicked;
         private static double? _argA;
         private static double? _argB;
+        private static double? _argSameOp;
         private static bool _firstInput = true;
+        private static bool _sameOp = false;
         private static string _currentOp = Operators.None;
 
         public static void checkNullTarget()
@@ -83,6 +85,8 @@ namespace Calculator
             _argA = null;
             _argB = null;
             _firstInput = true;
+            _sameOp = false;
+            _argSameOp = null;
             checkButtonStyle(sender, false);
         }
         public static void pressOperator(object sender)
@@ -90,6 +94,8 @@ namespace Calculator
             checkNullTarget();
             checkButtonStyle(sender, true);
             _firstInput = true;
+            _sameOp = false;
+            _argSameOp = null;
             _argA = double.Parse(_targetDisplay.Text);
 
             if (sender is Button button)
@@ -119,44 +125,81 @@ namespace Calculator
         {
             checkNullTarget();
             _firstInput = true;
-            _argB = double.Parse(_targetDisplay.Text);
             double result;
 
-            if (_lastClicked != null)
+            if (_sameOp)
             {
-                _lastClicked.BorderBrush = Brushes.Black;
-                _lastClicked.BorderThickness = new Thickness(0.5);
-                _lastClicked = null;
+                if (_targetDisplay.Text != _argA.ToString())
+                {
+                    _argA = double.Parse(_targetDisplay.Text);
+                }
+                switch (_currentOp)
+                {
+                    case Operators.Addition:
+                        result = (double)(_argA + _argSameOp);
+                        _targetDisplay.Text = result.ToString();
+                        _argA = result;                       
+                        return;
+
+                    case Operators.Subtraction:
+                        result = (double)(_argA - _argSameOp);
+                        _targetDisplay.Text = result.ToString();
+                        _argA = result;
+                        return;
+
+                    case Operators.Multiplication:
+                        result = (double)(_argA * _argSameOp);
+                        _targetDisplay.Text = result.ToString();
+                        _argA = result;
+                        return;
+
+                    case Operators.Division:
+                        result = (double)(_argA / _argSameOp);
+                        _targetDisplay.Text = result.ToString();
+                        return;
+                    default:
+                        MessageBox.Show("error calculating response", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                }
             }
 
+            _argB = double.Parse(_targetDisplay.Text);
             switch (_currentOp)
             {
                 case Operators.Addition:
                     result = (double)(_argA + _argB);
                     _targetDisplay.Text = result.ToString();
                     _argA = result;
+                    _argSameOp = _argB;
                     _argB = null;
+                    _sameOp = true;
                     break;
 
                 case Operators.Subtraction:
                     result = (double)(_argA - _argB);
                     _targetDisplay.Text = result.ToString();
                     _argA = result;
+                    _argSameOp = _argB;
                     _argB = null;
+                    _sameOp = true;
                     break;
 
                 case Operators.Multiplication:
                     result = (double)(_argA * _argB);
                     _targetDisplay.Text = result.ToString();
                     _argA = result;
+                    _argSameOp = _argB;
                     _argB = null;
+                    _sameOp = true;
                     break;
 
                 case Operators.Division:
                     result = (double)(_argA / _argB);
                     _targetDisplay.Text = result.ToString();
                     _argA = result;
+                    _argSameOp = _argB;
                     _argB = null;
+                    _sameOp = true;
                     break;
                 default:
                     MessageBox.Show("error calculating response","ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
