@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,8 +21,10 @@ namespace Calculator
         private static double? _argB;
         private static double? _argSameOp;
         private static bool _firstInput = true;
+        private static bool _secondInput = false;
         private static bool _sameOp = false;
         private static string _currentOp = Operators.None;
+        private static string _lastOp = Operators.None;
 
         public static void checkNullTarget()
         {
@@ -65,7 +68,10 @@ namespace Calculator
                     _targetDisplay.Text += buttonText;
                 }
             }
-
+            if (_argA != null && _currentOp != Operators.None)
+            {
+                _secondInput = true;
+            }
         }
         public static void putDecimal(object sender)
         {
@@ -89,6 +95,7 @@ namespace Calculator
             _argA = null;
             _argB = null;
             _firstInput = true;
+            _secondInput = false;
             _sameOp = false;
             _argSameOp = null;
             checkButtonStyle(sender, false);
@@ -102,7 +109,7 @@ namespace Calculator
             _argSameOp = null;
             double currentInput = double.Parse(_targetDisplay.Text);
 
-            if (_argA != null && _currentOp != Operators.None)
+            if (_argA != null && _currentOp != Operators.None && _secondInput)
             {
                 _argA = inlineOperation((double)_argA, currentInput, _currentOp);
                 _targetDisplay.Text = _argA.ToString();
@@ -146,25 +153,19 @@ namespace Calculator
                 {
                     _argA = double.Parse(_targetDisplay.Text);
                 }
-                switch (_currentOp)
+                switch (_lastOp)
                 {
                     case Operators.Addition:
-                        result = (double)(_argA + _argSameOp);
-                        _targetDisplay.Text = result.ToString();
-                        _argA = result;                       
-                        return;
+                        result = (double)(_argA + _argSameOp);                     
+                        break;
 
                     case Operators.Subtraction:
                         result = (double)(_argA - _argSameOp);
-                        _targetDisplay.Text = result.ToString();
-                        _argA = result;
-                        return;
+                        break;
 
                     case Operators.Multiplication:
                         result = (double)(_argA * _argSameOp);
-                        _targetDisplay.Text = result.ToString();
-                        _argA = result;
-                        return;
+                        break;
 
                     case Operators.Division:
                         if (_argB == 0)
@@ -174,67 +175,60 @@ namespace Calculator
                             return;
                         }
                         result = (double)(_argA / _argSameOp);
-                        _targetDisplay.Text = result.ToString();
-                        return;
+                        break;
                     default:
                         MessageBox.Show("error calculating response", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                }
-            }
-
-            _argB = double.Parse(_targetDisplay.Text);
-            switch (_currentOp)
-            {
-                case Operators.Addition:
-                    result = (double)(_argA + _argB);
-                    _targetDisplay.Text = result.ToString();
-                    _argA = result;
-                    _argSameOp = _argB;
-                    _argB = null;
-                    _sameOp = true;
-                    break;
-
-                case Operators.Subtraction:
-                    result = (double)(_argA - _argB);
-                    _targetDisplay.Text = result.ToString();
-                    _argA = result;
-                    _argSameOp = _argB;
-                    _argB = null;
-                    _sameOp = true;
-                    break;
-
-                case Operators.Multiplication:
-                    result = (double)(_argA * _argB);
-                    _targetDisplay.Text = result.ToString();
-                    _argA = result;
-                    _argSameOp = _argB;
-                    _argB = null;
-                    _sameOp = true;
-                    break;
-
-                case Operators.Division:
-                    if (_argB == 0)
-                    {
-                        clearText(null);
-                        _targetDisplay.Text = "Can't Divide By Zero";
+                        result = double.NaN;
                         break;
-                    }
-                    result = (double)(_argA / _argB);
-                    _targetDisplay.Text = result.ToString();
-                    _argA = result;
-                    _argSameOp = _argB;
-                    _argB = null;
-                    _sameOp = true;
-                    break;
-                default:
-                    MessageBox.Show("error calculating response","ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-                    break;
+                }
+                _targetDisplay.Text = result.ToString();
+                _argA = result;
+            } 
+            else
+            {
+                _argB = double.Parse(_targetDisplay.Text);
+                switch (_currentOp)
+                {
+                    case Operators.Addition:
+                        result = (double)(_argA + _argB);
+                        break;
+
+                    case Operators.Subtraction:
+                        result = (double)(_argA - _argB);
+                        break;
+
+                    case Operators.Multiplication:
+                        result = (double)(_argA * _argB);
+                        break;
+
+                    case Operators.Division:
+                        if (_argB == 0)
+                        {
+                            clearText(null);
+                            _targetDisplay.Text = "Can't Divide By Zero";
+                            result = double.NaN;
+                            break;
+                        }
+                        result = (double)(_argA / _argB);
+                        break;
+                    default:
+                        MessageBox.Show("error calculating response", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                        result = double.NaN;
+                        break;
+                }
+                _targetDisplay.Text = result.ToString();
+                _argA = result;
+                _argSameOp = _argB;
+                _argB = null;
+                _sameOp = true;
+                _lastOp = _currentOp;
+                _currentOp = Operators.None;
             }
-
-
+            checkButtonStyle(null, false);
         }
         public static double inlineOperation(double a, double b, string op)
         {
+            _secondInput = false;
             switch (_currentOp)
             {
                 case Operators.Addition:
