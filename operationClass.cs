@@ -100,7 +100,16 @@ namespace Calculator
             _firstInput = true;
             _sameOp = false;
             _argSameOp = null;
-            _argA = double.Parse(_targetDisplay.Text);
+            double currentInput = double.Parse(_targetDisplay.Text);
+
+            if (_argA != null && _currentOp != Operators.None)
+            {
+                _argA = inlineOperation((double)_argA, currentInput, _currentOp);
+                _targetDisplay.Text = _argA.ToString();
+            } else
+            {
+                _argA = currentInput;
+            }
 
             if (sender is Button button)
             {
@@ -224,6 +233,33 @@ namespace Calculator
 
 
         }
+        public static double inlineOperation(double a, double b, string op)
+        {
+            switch (_currentOp)
+            {
+                case Operators.Addition:
+                    return (double)(a + b);
 
+                case Operators.Subtraction:
+                    return (double)(a - b);
+
+                case Operators.Multiplication:
+                    return (double)(a * b);
+
+                case Operators.Division:
+                    if (b == 0)
+                    {
+                        clearText(null);
+                        _targetDisplay.Text = "Can't Divide By Zero";
+                        return double.NaN;
+                    }
+                    return (double)(a / b);
+                default:
+                    MessageBox.Show("error calculating response", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return double.NaN;
+
+            }
+
+        }
     }
 }
