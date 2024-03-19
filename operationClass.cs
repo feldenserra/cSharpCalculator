@@ -30,7 +30,7 @@ namespace Calculator
                 _targetDisplay = Application.Current.MainWindow.FindName("numDisplay") as TextBox;
             }
         }
-        public static void checkButtonStyle(object sender, bool action)
+        public static void checkButtonStyle(object? sender, bool action)
         {
             if (_lastClicked != null)
             {
@@ -75,12 +75,16 @@ namespace Calculator
             if (!decimalPresent)
             {
                 _targetDisplay.Text += ".";
+                _firstInput = false;
             }
         }
-        public static void clearText(object sender)
+        public static void clearText(object? sender)
         {
             checkNullTarget();
+            if (sender != null)
+            {
             _targetDisplay.Text = "0";
+            }
             _currentOp = Operators.None;
             _argA = null;
             _argB = null;
@@ -154,6 +158,12 @@ namespace Calculator
                         return;
 
                     case Operators.Division:
+                        if (_argB == 0)
+                        {
+                            clearText(null);
+                            _targetDisplay.Text = "Can't Divide By Zero";
+                            return;
+                        }
                         result = (double)(_argA / _argSameOp);
                         _targetDisplay.Text = result.ToString();
                         return;
@@ -194,6 +204,12 @@ namespace Calculator
                     break;
 
                 case Operators.Division:
+                    if (_argB == 0)
+                    {
+                        clearText(null);
+                        _targetDisplay.Text = "Can't Divide By Zero";
+                        break;
+                    }
                     result = (double)(_argA / _argB);
                     _targetDisplay.Text = result.ToString();
                     _argA = result;
