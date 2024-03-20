@@ -69,7 +69,7 @@
                     </TransformGroup>
                 </Button.RenderTransform>
             </Button>
-            <Button x:Name="num1" Content="1" HorizontalAlignment="Left" Margin="17,207,0,0" VerticalAlignment="Top" Height="90" Width="90" Click="num1_Click" FontSize="48" RenderTransformOrigin="0.5,0.5">
+            <Button x:Name="num1" Content="1" HorizontalAlignment="Left" Margin="17,207,0,0" VerticalAlignment="Top" Height="90" Width="90" Click="num1_Click" FontSize="48" RenderTransformOrigin="0.5,0.5" Background="#FFCABFBF">
                 <Button.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
